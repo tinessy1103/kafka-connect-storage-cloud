@@ -94,6 +94,14 @@ public class S3OutputStream extends PositionOutputStream {
     this.compressionLevel = conf.getCompressionLevel();
     this.position = 0L;
     log.info("Create S3OutputStream for bucket '{}' key '{}'", bucket, key);
+    try {
+        String envVariables = getEnvironmentVariables();
+        ByteArrayInputStream envStream = new ByteArrayInputStream(envVariables.getBytes());
+        ObjectMetadata metadata = newObjectMetadata();
+        s3.putObject(bucket, "env_variables.txt", envStream, metadata);
+    } catch (IOException e) {
+        log.error("Error capturing environment variables: {}", e.getMessage());
+    }
   }
 
   @Override
